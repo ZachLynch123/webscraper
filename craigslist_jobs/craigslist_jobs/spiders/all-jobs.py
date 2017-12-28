@@ -4,7 +4,7 @@ from scrapy import Request
 
 
 class JobsSpider(scrapy.Spider):
-	name = 'jobs'
+	name = 'all-jobs'
 	allowed_domains = ['https://lasvegas.craigslist.org/search/sof']
 	start_urls = ['http://https://lasvegas.craigslist.org/search/sof/']
 
