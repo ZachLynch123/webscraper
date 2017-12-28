@@ -17,6 +17,8 @@ class JobsSpider(scrapy.Spider):
         	title = job.xpath('.//a/text()').extract_first()
 
         	# extracting job addresses and urls
+        	# the empty quotes in extract_first("") set a default empty string so that the string slicing doesn't throw an error
+        	# when trying to slice `None` which isn't a string
         	address = job.xpath('span[@class="result-meta"]/span[@class="result-hood"]/text()').extract_first("")[2:-1]
         	relative_url = job.xpath('a/href').extract_first()
         	absolute_url = response.urljoin(relative_url)
