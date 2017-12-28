@@ -17,5 +17,6 @@ class JobsSpider(scrapy.Spider):
     	# extact() extracts every instance on the web page that follows these xpath rules
     	# if extract_first() is used instead of extract(), then only the first instance that follows the xpath will be extracted
     	titles = response.xpath('//a[@class="result-title hdrlnk"]/text()').extract()
-    	print(titles)
+    	for title in titles: 
+    		yield {'Title': title}
 
