@@ -8,10 +8,17 @@ class JobsSpider(scrapy.Spider):
     start_urls = ['http://https://lasvegas.craigslist.org/search/sof/']
 
     def parse(self, response):
+    	# started xpath with `//` meaning it starts from <html> until <p> whose class name is 'result-info'
         jobs = response.xpath('//p[@class="result-info"]')
         for job in jobs: 
-        	# note that I didn't use the response.xpath in the for loop
-        	# instead I used the wrapper selecter that is referred to in the 'jobs' vaiable
+        	# note the lack of response.xpath in the for loop
+        	# instead use the wrapper selecter that is referred to in the 'jobs' vaiable
+        	# or title = job.xpath('a/text()').extract_first()
         	title = job.xpath('.//a/text()').extract_first()
 
-        	yield{'Title': title}
+        	# extracting job addresses and urls
+        	address = job.xpath('span[@class="result-meta"]/span[@class="result-hood"]/text()').extract_first("")[2:-1]
+        	relative_url = job.xpath('a/href').extract_first()
+        	absolute_url = response.urljoin(relative_url)
+
+        	yield{'URL': absolute_url, 'Title': title, 'Address':address}
