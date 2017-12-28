@@ -20,7 +20,9 @@ class JobsSpider(scrapy.Spider):
         	# the empty quotes in extract_first("") set a default empty string so that the string slicing doesn't throw an error
         	# when trying to slice `None` which isn't a string
         	address = job.xpath('span[@class="result-meta"]/span[@class="result-hood"]/text()').extract_first("")[2:-1]
-        	relative_url = job.xpath('a/href').extract_first()
+        	# only returns the last half of the url. like ".../sdf/23/q?="
+        	relative_url = job.xpath('a/@href').extract_first()
+        	# joins the initial web address with the relative url to make somethingk like "https://www.google.com/something/something"
         	absolute_url = response.urljoin(relative_url)
-
+        	# yield as dictionary
         	yield{'URL': absolute_url, 'Title': title, 'Address':address}
