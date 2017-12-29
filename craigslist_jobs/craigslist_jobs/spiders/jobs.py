@@ -26,7 +26,7 @@ class JobsSpider(scrapy.Spider):
 			# joins the initial web address with the relative url to make somethingk like "https://www.google.com/something/something"
 			absolute_url = response.urljoin(relative_url)
 			# yield as dictionary
-			yield{'URL': absolute_url, 'Title': title, 'Address':address}
+			# yield{'URL': absolute_url, 'Title': title, 'Address':address}
 
 		relative_next_url = response.xpath('//a[@class="button next"]/@href').extract_first()
 		absolute_next_url = response.urljoin(relative_next_url)
@@ -34,18 +34,18 @@ class JobsSpider(scrapy.Spider):
 		yield Request(absolute_next_url,callback=self.parse_page, meta={'URL': absolute_url, 'Title': title, 'Address':address})
 
 
-	def parse_page(self, response): 
-		# deal with the meta as a dictionary and use python's get() method to call the keys and get dictionary values
+	def parse_page(self, response):
 		url = response.meta.get('URL')
 		title = response.meta.get('Title')
 		address = response.meta.get('Address')
-		# in case the job description is more than one paragraph, use join method to merge them
-
+ 
 		description = "".join(line for line in response.xpath('//*[@id="postingbody"]/text()').extract())
-		# using the 2 span tags in the <p> class "attrgroup", get the compinsation and emplyment type
-		compensation = response.xpath('//p[@class="attrgroup"]/span/b/text()')[0].extract()
-		employment_type = response.xpath('//p[@class="attrgroup"]/span/b/text()')[1].extract()
-		yield{'URL': url, 'Title': title, 'Address': address, 'Description': description}
+ 
+		compensation = response.xpath('//p[@class="attrgroup"]/span[1]/b/text()').extract_first()
+		employment_type = response.xpath('//p[@class="attrgroup"]/span[2]/b/text()').extract_first()
+ 
+		yield{'URL': url, 'Title': title, 'Address':address, 'Description':description, 'Compensation':compensation, 'Employment Type':employment_type}
+ 
 
 
 
