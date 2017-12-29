@@ -5,7 +5,7 @@ from scrapy import Request
 
 class JobsSpider(scrapy.Spider):
 	name = 'jobs'
-	allowed_domains = ['https://lasvegas.craigslist.org/search/sof']
+	allowed_domains = ['craigslist.org']
 	start_urls = ['https://lasvegas.craigslist.org/search/sof/']
 
 	def parse(self, response):
@@ -25,27 +25,24 @@ class JobsSpider(scrapy.Spider):
 			relative_url = job.xpath('a/@href').extract_first()
 			# joins the initial web address with the relative url to make somethingk like "https://www.google.com/something/something"
 			absolute_url = response.urljoin(relative_url)
+			yield Request(absolute_url,callback=self.parse_page, meta={'URL': absolute_url, 'Title': title, 'Address':address})
 			# yield as dictionary
 			# yield{'URL': absolute_url, 'Title': title, 'Address':address}
 
 		relative_next_url = response.xpath('//a[@class="button next"]/@href').extract_first()
 		absolute_next_url = response.urljoin(relative_next_url)
 
-		yield Request(absolute_next_url,callback=self.parse_page, meta={'URL': absolute_url, 'Title': title, 'Address':address})
+		yield Request(absolute_next_url, callback=self.parse)
 
 
-	def parse_page(self, response):
+	def parse_page(self, response): 
 		url = response.meta.get('URL')
 		title = response.meta.get('Title')
 		address = response.meta.get('Address')
- 
-		description = "".join(line for line in response.xpath('//*[@id="postingbody"]/text()').extract())
- 
 		compensation = response.xpath('//p[@class="attrgroup"]/span[1]/b/text()').extract_first()
 		employment_type = response.xpath('//p[@class="attrgroup"]/span[2]/b/text()').extract_first()
- 
-		yield{'URL': url, 'Title': title, 'Address':address, 'Description':description, 'Compensation':compensation, 'Employment Type':employment_type}
- 
+
+		yield{'URL': url, 'Title': title, 'Address':address, 'Compensation': compensation, 'Employment_type': employment_type}
 
 
 
