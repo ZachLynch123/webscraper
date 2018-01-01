@@ -15,7 +15,6 @@ class JobsSpider(scrapy.Spider):
 		for job in jobs: 
 			# note the lack of response.xpath in the for loop
 			# instead use the wrapper selecter that is referred to in the 'jobs' vaiable
-			# or title = job.xpath('a/text()').extract_first()
 			# the empty quotes in extract_first("") set a default empty string so that the string slicing doesn't throw an error
 			# when trying to slice `None` which isn't a string
 			title = job.xpath('.//a/text()').extract_first()
